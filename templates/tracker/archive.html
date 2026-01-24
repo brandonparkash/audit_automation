@@ -1,0 +1,68 @@
+{% extends "shared/base.html" %}
+{% block content %}
+<div class="container">
+    <div class="header-row">
+        <h1>Evidence Archive Vault</h1>
+        <div class="actions">
+            <input type="text" id="search" placeholder="Filter files..." onkeyup="filterTable()">
+        </div>
+    </div>
+
+    <div class="card">
+        <table id="auditTable">
+            <thead>
+                <tr>
+                    <th>Category / Folder</th>
+                    <th>File Name</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in evidence %}
+                <tr>
+                    <td>
+                        <span class="status-badge pending" style="background:#e0f2fe; color:#0369a1;">
+                            {{ item.category }}
+                        </span>
+                    </td>
+                    <td style="font-weight:600;">{{ item.filename }}</td>
+                    <td>
+                        <a href="/{{ item.path }}" class="btn secondary" download>⬇ Download</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3" style="text-align:center; padding: 2rem; color: #94a3b8;">
+                        No evidence has been uploaded to the vault yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+// Reuse the search logic for this table
+function filterTable() {
+    const input = document.getElementById("search");
+    const filter = input.value.toUpperCase();
+    const table = document.getElementById("auditTable");
+    const tr = table.getElementsByTagName("tr");
+
+    for (let i = 1; i < tr.length; i++) {
+        let tdCat = tr[i].getElementsByTagName("td")[0];
+        let tdFile = tr[i].getElementsByTagName("td")[1];
+        if (tdCat || tdFile) {
+            let txtValueCat = tdCat.textContent || tdCat.innerText;
+            let txtValueFile = tdFile.textContent || tdFile.innerText;
+            if (txtValueCat.toUpperCase().indexOf(filter) > -1 || txtValueFile.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+        }
+    }
+}
+</script>
+{% endblock %}
