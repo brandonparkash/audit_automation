@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Secure Evidence Upload</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="upload-wrapper">
+        <div class="upload-card">
+            <h1 style="color: var(--primary); margin-bottom: 0.5rem;">🔐 Secure Upload Portal</h1>
+            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 2rem;">ISO 9001 Audit Evidence Submission</p>
+            
+            <div class="info-box">
+                <strong>Department:</strong> {{ audit.department }}<br>
+                <strong>Document Required:</strong> {{ audit.document_type }}<br>
+                <strong>Deadline:</strong> {{ audit.deadline }}
+            </div>
+
+            <form action="/upload/{{ audit.security_key }}" method="post" enctype="multipart/form-data">
+                <div class="drop-zone">
+                    <p>📎 Select your evidence file</p>
+                    <input type="file" name="file" required accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png">
+                </div>
+                
+                <button type="submit" class="btn primary full-width">Upload Evidence</button>
+            </form>
+
+            <p style="text-align: center; margin-top: 1.5rem; font-size: 0.85rem; color: #94a3b8;">
+                This is a secure, one-time upload link. Your file will be automatically organized in the Audit Vault.
+            </p>
+        </div>
+    </div>
+
+    <script src="/static/js/uploader.js"></script>
+</body>
+</html>
