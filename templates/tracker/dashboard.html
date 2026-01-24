@@ -1,0 +1,79 @@
+{% extends "shared/base.html" %}
+{% block content %}
+<div class="container">
+    <div class="header-row">
+        <h1>Internal Audit Tracker</h1>
+        <div class="actions" style="display: flex; align-items: center; gap: 15px;">
+            <form action="/nuclear_clear" method="post" onsubmit="return confirm('CRITICAL WARNING: This will permanently delete ALL audit records and ALL physical evidence files. This cannot be undone. Proceed?')">
+                <button type="submit" class="btn text" style="color: var(--danger); font-size: 0.8rem; border: 1px solid #fecaca; padding: 5px 10px;">⚠️ Wipe All Data</button>
+            </form>
+            
+            <button class="btn primary" onclick="openAddModal()">+ New Request</button>
+            <input type="text" id="search" placeholder="Search audits..." onkeyup="filterTable()">
+        </div>
+    </div>
+
+    <div class="card">
+        <table id="auditTable">
+            <thead>
+                <tr>
+                    <th>Department</th>
+                    <th>Document Needed</th>
+                    <th>Contact</th>
+                    <th>Deadline</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in info %}
+                <tr>
+                    <td>{{ item.department }}</td>
+                    <td>{{ item.document_type }}</td>
+                    <td>{{ item.contact_name }}</td>
+                    <td>{{ item.deadline }}</td>
+                    <td>
+                        <span class="status-badge {{ item.status|lower }}">{{ item.status }}</span>
+                    </td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <button class="btn secondary" onclick="openEmailModal('{{item.email}}', '{{item.document_type}}', '{{item.security_key}}')">
+                                ✉️ Send Link
+                            </button>
+
+                            <form action="/delete/{{item.id}}" method="post" onsubmit="return confirm('Delete this specific record and its associated file?')">
+                                <button type="submit" class="btn text" style="color: var(--danger); padding: 5px; cursor: pointer;" title="Delete Record">
+                                    🗑️
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="addModal" class="modal">
+    <div class="modal-content">
+        <h2>Initiate Audit Request</h2>
+        <form action="/add" method="post">
+            <input type="text" name="dept" placeholder="Department (e.g. Housing)" required>
+            <input type="text" name="doc" placeholder="Document Type (e.g. FED Inspection Report)" required>
+            <input type="text" name="name" placeholder="Contact Name" required>
+            <input type="email" name="email" placeholder="Contact Email" required>
+            <label>Deadline:</label>
+            <input type="date" name="deadline" required>
+            <div class="modal-actions">
+                <button type="submit" class="btn primary">Create Request</button>
+                <button type="button" class="btn text" onclick="closeAddModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% include "tracker/email_modal.html" %}
+
+<script src="/static/js/tracker.js"></script>
+{% endblock %}
